@@ -40,4 +40,17 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     get users_path
     assert_select 'a', text: 'delete', count: 0
   end
+
+  test "index without activated users" do
+    log_in_as(@admin)
+    get users_path
+    assert_template 'users/index'
+    first_page_of_users = User.where(activated: true).paginate(page: 1)
+    first_page_of_users.each do |user|
+      assert_select 'a[href=?]', user_path(user), text: user.name
+      unless user == @admin
+        assert_select 'a[href=?]', user_path(user), text: 'delete'
+      end
+    end
+  end
 end
