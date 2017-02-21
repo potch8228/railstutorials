@@ -4,6 +4,7 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:michael)
+    @not_active_user = users(:kelly)
   end
 
   test "login with invalid information" do
@@ -58,5 +59,17 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
   test "login without remembering" do
     log_in_as(@user, remember_me: '0')
     assert_nil cookies['remember_token']
+  end
+
+  test "should show the activated user" do
+    log_in_as(@user)
+    get user_path(@user)
+    assert_template 'users/show'
+  end
+
+  test "should show top when showing the inactivated user" do
+    log_in_as(@user)
+    get user_path(@not_active_user)
+    assert_redirected_to root_path
   end
 end
