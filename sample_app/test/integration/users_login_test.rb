@@ -27,6 +27,8 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", login_path, count: 0
     assert_select "a[href=?]", logout_path
     assert_select "a[href=?]", user_path(@user)
+    assert_select 'div.stats>a', text: /#{@user.followers.count}/
+    assert_select 'div.stats>a', text: /#{@user.following.count}/
   end
 
   test "login with valid information followed by logout" do
@@ -40,6 +42,8 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", login_path, count: 0
     assert_select "a[href=?]", logout_path
     assert_select "a[href=?]", user_path(@user)
+    assert_select 'div.stats>a', text: /#{@user.followers.count}/
+    assert_select 'div.stats>a', text: /#{@user.following.count}/
     delete logout_path
     assert_not is_logged_in?
     assert_redirected_to root_url
